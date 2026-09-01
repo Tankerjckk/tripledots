@@ -2137,6 +2137,199 @@
 
         }
 
+
+        /* =========================
+           HERO OVERRIDES V2
+        ========================= */
+
+        .hero {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 138px 0 88px;
+            overflow: hidden;
+        }
+
+        .hero .container {
+            width: min(calc(100% - 112px), 1500px);
+        }
+
+        .hero::before {
+            width: 1100px;
+            height: 1100px;
+            left: 23%;
+            top: 46%;
+            background: radial-gradient(
+                circle,
+                rgba(232, 90, 36, 0.10),
+                rgba(232, 90, 36, 0.035) 34%,
+                transparent 67%
+            );
+        }
+
+        .hero-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 0.84fr) minmax(620px, 1.16fr);
+            align-items: center;
+            gap: clamp(72px, 6vw, 124px);
+        }
+
+        .hero-content {
+            min-width: 0;
+            position: relative;
+            z-index: 20;
+        }
+
+        .hero h1 {
+            max-width: 720px;
+            font-size: clamp(64px, 5.85vw, 104px);
+            line-height: 0.88;
+            font-weight: 600;
+            letter-spacing: -0.075em;
+        }
+
+        .hero-lead {
+            max-width: 610px;
+            margin-top: 36px;
+        }
+
+        .app-preview {
+            min-width: 0;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            perspective: 1400px;
+        }
+
+        .app-window {
+            width: 100%;
+            transform: rotateY(-3.5deg) rotateX(1deg);
+        }
+
+        .app-preview:hover .app-window {
+            transform: rotateY(-1deg) rotateX(0deg) translateY(-5px);
+        }
+
+        .orb {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: auto;
+            bottom: auto;
+            z-index: 12;
+            opacity: 1;
+            pointer-events: none;
+            will-change: transform, opacity, filter;
+        }
+
+        .orb::after {
+            content: "";
+            position: absolute;
+            width: 25%;
+            height: 14%;
+            left: 23%;
+            top: 16%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.42);
+            filter: blur(3px);
+            transform: rotate(-25deg);
+        }
+
+        .orb-1 {
+            width: 78px;
+            height: 78px;
+        }
+
+        .orb-2 {
+            width: 38px;
+            height: 38px;
+        }
+
+        .orb-3 {
+            width: 58px;
+            height: 58px;
+        }
+
+        @media (max-width: 1250px) {
+            .hero .container {
+                width: min(calc(100% - 72px), 1500px);
+            }
+
+            .hero-grid {
+                grid-template-columns: minmax(0, 0.9fr) minmax(520px, 1.1fr);
+                gap: 60px;
+            }
+
+            .hero h1 {
+                font-size: clamp(60px, 6vw, 88px);
+            }
+        }
+
+        @media (max-width: 1050px) {
+            .hero {
+                padding: 130px 0 90px;
+            }
+
+            .hero .container {
+                width: calc(100% - 64px);
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 70px;
+            }
+
+            .hero-content {
+                max-width: 760px;
+            }
+
+            .app-preview {
+                max-width: 820px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .hero {
+                min-height: auto;
+                padding: 120px 0 76px;
+            }
+
+            .hero .container {
+                width: calc(100% - 40px);
+            }
+
+            .hero h1 {
+                font-size: clamp(56px, 15vw, 88px);
+            }
+
+            .app-window {
+                transform: none;
+            }
+
+            .orb-1 {
+                width: 58px;
+                height: 58px;
+            }
+
+            .orb-2 {
+                width: 30px;
+                height: 30px;
+            }
+
+            .orb-3 {
+                width: 44px;
+                height: 44px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .hero .container {
+                width: calc(100% - 28px);
+            }
+        }
+
     </style>
 
 </head>
@@ -3425,56 +3618,238 @@
         );
 
 
-        const orbs =
-            document.querySelectorAll(
-                ".orb"
+        /* =========================
+           FLYING HERO ORBS
+        ========================= */
+
+        const hero =
+            document.querySelector(
+                ".hero"
             );
 
 
-        window.addEventListener(
+        const flyingOrbs = [
+            {
+                element: document.querySelector(".orb-1"),
+                x: 0,
+                y: 0,
+                vx: 176,
+                vy: 128,
+                depthSpeed: 0.00115,
+                depthOffset: 0.4
+            },
+            {
+                element: document.querySelector(".orb-2"),
+                x: 0,
+                y: 0,
+                vx: -215,
+                vy: 164,
+                depthSpeed: 0.00145,
+                depthOffset: 2.2
+            },
+            {
+                element: document.querySelector(".orb-3"),
+                x: 0,
+                y: 0,
+                vx: 148,
+                vy: -198,
+                depthSpeed: 0.00128,
+                depthOffset: 4.1
+            }
+        ];
+
+
+        let orbsInitialized = false;
+        let previousOrbTime = null;
+
+        let targetMouseX = 0;
+        let targetMouseY = 0;
+        let smoothMouseX = 0;
+        let smoothMouseY = 0;
+
+
+        function initializeOrbs() {
+
+            const width = hero.clientWidth;
+            const height = hero.clientHeight;
+
+            const positions = [
+                [0.84, 0.18],
+                [0.10, 0.76],
+                [0.56, 0.82]
+            ];
+
+            flyingOrbs.forEach((orb, index) => {
+
+                if (!orb.element) {
+                    return;
+                }
+
+                orb.x = width * positions[index][0];
+                orb.y = height * positions[index][1];
+
+            });
+
+            orbsInitialized = true;
+
+        }
+
+
+        hero.addEventListener(
             "mousemove",
             event => {
 
-                const x =
-                    (
-                        event.clientX
-                        / window.innerWidth
-                        - 0.5
-                    );
+                const rect = hero.getBoundingClientRect();
 
-                const y =
-                    (
-                        event.clientY
-                        / window.innerHeight
-                        - 0.5
-                    );
+                targetMouseX =
+                    (event.clientX - rect.left)
+                    / rect.width
+                    - 0.5;
 
-
-                orbs.forEach(
-                    (
-                        orb,
-                        index
-                    ) => {
-
-                        const multiplier =
-                            (
-                                index + 1
-                            )
-                            * 10;
-
-
-                        orb.style.transform =
-                            `
-                            translate(
-                                ${x * multiplier}px,
-                                ${y * multiplier}px
-                            )
-                            `;
-
-                    }
-                );
+                targetMouseY =
+                    (event.clientY - rect.top)
+                    / rect.height
+                    - 0.5;
 
             }
+        );
+
+
+        hero.addEventListener(
+            "mouseleave",
+            () => {
+                targetMouseX = 0;
+                targetMouseY = 0;
+            }
+        );
+
+
+        window.addEventListener(
+            "resize",
+            () => {
+                orbsInitialized = false;
+            }
+        );
+
+
+        function animateHeroOrbs(time) {
+
+            if (!orbsInitialized) {
+                initializeOrbs();
+            }
+
+            if (previousOrbTime === null) {
+                previousOrbTime = time;
+            }
+
+            const deltaSeconds = Math.min(
+                (time - previousOrbTime) / 1000,
+                0.032
+            );
+
+            previousOrbTime = time;
+
+            const width = hero.clientWidth;
+            const height = hero.clientHeight;
+
+            smoothMouseX +=
+                (targetMouseX - smoothMouseX) * 0.035;
+
+            smoothMouseY +=
+                (targetMouseY - smoothMouseY) * 0.035;
+
+            flyingOrbs.forEach((orb, index) => {
+
+                if (!orb.element) {
+                    return;
+                }
+
+                const radiusX = orb.element.offsetWidth / 2;
+                const radiusY = orb.element.offsetHeight / 2;
+
+                orb.x += orb.vx * deltaSeconds;
+                orb.y += orb.vy * deltaSeconds;
+
+                const minX = radiusX + 8;
+                const maxX = width - radiusX - 8;
+                const minY = radiusY + 8;
+                const maxY = height - radiusY - 8;
+
+                if (orb.x <= minX) {
+                    orb.x = minX;
+                    orb.vx = Math.abs(orb.vx);
+                }
+
+                if (orb.x >= maxX) {
+                    orb.x = maxX;
+                    orb.vx = -Math.abs(orb.vx);
+                }
+
+                if (orb.y <= minY) {
+                    orb.y = minY;
+                    orb.vy = Math.abs(orb.vy);
+                }
+
+                if (orb.y >= maxY) {
+                    orb.y = maxY;
+                    orb.vy = -Math.abs(orb.vy);
+                }
+
+                const mouseStrength = 18 + index * 8;
+
+                const cursorX =
+                    smoothMouseX * mouseStrength;
+
+                const cursorY =
+                    smoothMouseY * mouseStrength;
+
+                const depth =
+                    Math.sin(
+                        time * orb.depthSpeed
+                        + orb.depthOffset
+                    );
+
+                const scale =
+                    0.82
+                    + ((depth + 1) / 2) * 0.42;
+
+                const opacity =
+                    0.48
+                    + ((depth + 1) / 2) * 0.52;
+
+                const blur =
+                    depth < -0.15
+                        ? 1.4
+                        : 0;
+
+                orb.element.style.zIndex =
+                    depth > 0.18
+                        ? "30"
+                        : "2";
+
+                orb.element.style.opacity = opacity;
+                orb.element.style.filter = `blur(${blur}px)`;
+
+                orb.element.style.transform = `
+                    translate3d(
+                        ${orb.x + cursorX - radiusX}px,
+                        ${orb.y + cursorY - radiusY}px,
+                        0
+                    )
+                    scale(${scale})
+                `;
+
+            });
+
+            requestAnimationFrame(
+                animateHeroOrbs
+            );
+
+        }
+
+
+        requestAnimationFrame(
+            animateHeroOrbs
         );
 
     </script>
