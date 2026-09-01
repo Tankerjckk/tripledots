@@ -1,17 +1,31 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>MarketProfit Analyzer | TripleDots Studio</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        MarketProfit Analyzer | TripleDots Studio
+    </title>
 
     <meta
         name="description"
-        content="MarketProfit Analyzer to aplikacja desktopowa do analizy ofert dostawców, porównywania cen produktów oraz kalkulacji opłat i rentowności sprzedaży."
+        content="MarketProfit Analyzer to aplikacja desktopowa do analizy ofert dostawców, porównywania cen rynkowych, kalkulacji opłat marketplace i oceny rentowności sprzedaży."
+    >
+
+    <meta
+        name="theme-color"
+        content="#0d0d0d"
     >
 
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -19,21 +33,50 @@
         }
 
         :root {
-            --bg: #111111;
-            --surface: #181818;
+            --bg: #0b0b0b;
+            --bg-soft: #111111;
+
+            --surface: rgba(255, 255, 255, 0.045);
+            --surface-hover: rgba(255, 255, 255, 0.07);
+
+            --border: rgba(255, 255, 255, 0.09);
+            --border-strong: rgba(255, 255, 255, 0.16);
+
             --text: #f5f5f2;
-            --muted: #8a8a8a;
+            --muted: #8d8d89;
+            --muted-2: #656560;
+
             --accent: #e85a24;
-            --border: #2a2a2a;
+            --accent-light: #ff7b46;
+            --accent-dark: #8d2a0c;
+
+            --success: #6ec98b;
+
+            --max-width: 1320px;
         }
 
-        html,
-        body {
-            min-height: 100%;
+
+        html {
+            scroll-behavior: smooth;
         }
 
+
         body {
-            background: var(--bg);
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 12% 3%,
+                    rgba(232, 90, 36, 0.11),
+                    transparent 24%
+                ),
+                radial-gradient(
+                    circle at 95% 30%,
+                    rgba(232, 90, 36, 0.055),
+                    transparent 26%
+                ),
+                var(--bg);
+
             color: var(--text);
 
             font-family:
@@ -42,355 +85,3401 @@
                 sans-serif;
 
             -webkit-font-smoothing: antialiased;
+
+            overflow-x: hidden;
         }
+
 
         a {
             color: inherit;
             text-decoration: none;
         }
 
-        .page {
-            width: min(1100px, calc(100% - 40px));
-            margin: 0 auto;
-            padding: 40px 0 60px;
+
+        button,
+        input {
+            font: inherit;
         }
 
-        .header {
+
+        ::selection {
+            background: var(--accent);
+            color: white;
+        }
+
+
+        .container {
+            width:
+                min(
+                    calc(100% - 80px),
+                    var(--max-width)
+                );
+
+            margin: 0 auto;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index: 100;
+
+            padding: 24px 0;
+
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease,
+                backdrop-filter 0.25s ease;
+        }
+
+
+        .navbar.scrolled {
+            background:
+                rgba(11, 11, 11, 0.78);
+
+            border-bottom:
+                1px solid var(--border);
+
+            backdrop-filter:
+                blur(18px);
+        }
+
+
+        .navbar-inner {
             display: flex;
+
             align-items: center;
             justify-content: space-between;
 
-            padding-bottom: 28px;
-            border-bottom: 1px solid var(--border);
+            gap: 30px;
         }
 
-        .brand {
+
+        .navbar-brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+
+            position: relative;
+        }
+
+
+        .brand-mark span {
+            position: absolute;
+
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+
+            box-shadow:
+                0 0 28px rgba(232, 90, 36, 0.45);
+        }
+
+
+        .brand-mark span:nth-child(1) {
+            left: 0;
+            top: 11px;
+        }
+
+
+        .brand-mark span:nth-child(2) {
+            left: 11px;
+            top: 0;
+        }
+
+
+        .brand-mark span:nth-child(3) {
+            left: 22px;
+            top: 11px;
+        }
+
+
+        .brand-text {
             font-size: 14px;
             font-weight: 600;
+
+            letter-spacing: -0.025em;
         }
 
-        .back {
+
+        .navbar-menu {
+            display: flex;
+
+            align-items: center;
+
+            gap: 32px;
+        }
+
+
+        .navbar-menu a {
             color: var(--muted);
+
             font-size: 12px;
+            font-weight: 500;
 
             transition: color 0.2s ease;
         }
 
-        .back:hover {
+
+        .navbar-menu a:hover {
             color: var(--text);
         }
 
-        .hero {
-            padding: 90px 0 70px;
+
+        .navbar-cta {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
         }
 
+
+        .version-pill {
+            padding: 8px 13px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 999px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button {
+            min-height: 46px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 10px;
+
+            padding: 0 20px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+
+        .button:hover {
+            transform:
+                translateY(-2px);
+        }
+
+
+        .button-primary {
+            background: var(--accent);
+
+            color: white;
+
+            box-shadow:
+                0 12px 40px rgba(232, 90, 36, 0.2);
+        }
+
+
+        .button-primary:hover {
+            background: var(--accent-light);
+        }
+
+
+        .button-secondary {
+            border:
+                1px solid var(--border-strong);
+
+            background:
+                rgba(255, 255, 255, 0.025);
+        }
+
+
+        .button-secondary:hover {
+            background:
+                rgba(255, 255, 255, 0.06);
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 100vh;
+
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            padding:
+                150px 0 100px;
+
+            overflow: hidden;
+        }
+
+
+        .hero::before {
+            content: "";
+
+            position: absolute;
+
+            width: 900px;
+            height: 900px;
+
+            left: 50%;
+            top: 40%;
+
+            transform:
+                translate(-50%, -50%);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(232, 90, 36, 0.065),
+                    transparent 63%
+                );
+
+            pointer-events: none;
+        }
+
+
+        .hero-grid {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.1fr)
+                minmax(420px, 0.9fr);
+
+            align-items: center;
+
+            gap: 80px;
+        }
+
+
+        .hero-content {
+            position: relative;
+
+            z-index: 3;
+        }
+
+
         .eyebrow {
-            margin-bottom: 18px;
+            margin-bottom: 24px;
 
-            color: var(--accent);
+            display: inline-flex;
 
-            font-size: 11px;
+            align-items: center;
+
+            gap: 10px;
+
+            color: var(--accent-light);
+
+            font-size: 10px;
             font-weight: 600;
 
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 0.16em;
         }
 
-        h1 {
+
+        .eyebrow-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+
+            box-shadow:
+                0 0 18px
+                rgba(232, 90, 36, 0.8);
+        }
+
+
+        .hero h1 {
             max-width: 850px;
 
-            font-size: clamp(48px, 8vw, 96px);
+            font-size:
+                clamp(
+                    64px,
+                    7.4vw,
+                    124px
+                );
+
+            line-height: 0.88;
+
             font-weight: 600;
 
-            line-height: 0.95;
-            letter-spacing: -0.055em;
+            letter-spacing: -0.075em;
         }
 
-        .lead {
-            max-width: 720px;
+
+        .hero h1 span {
+            display: block;
+
+            color: var(--accent);
+        }
+
+
+        .hero-lead {
+            max-width: 650px;
 
             margin-top: 34px;
 
             color: var(--muted);
 
             font-size: 17px;
-            line-height: 1.7;
+
+            line-height: 1.75;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
 
-            gap: 18px;
+        .hero-actions {
+            margin-top: 36px;
+
+            display: flex;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 12px;
         }
 
-        .card {
-            padding: 28px;
 
-            background: var(--surface);
+        .hero-note {
+            margin-top: 24px;
 
-            border: 1px solid var(--border);
-            border-radius: 14px;
+            color: var(--muted-2);
+
+            font-size: 11px;
         }
 
-        .card-label {
-            margin-bottom: 14px;
 
+        /* =========================
+           ANALYZER MOCKUP
+        ========================= */
+
+        .app-preview {
+            position: relative;
+
+            z-index: 3;
+
+            perspective: 1400px;
+        }
+
+
+        .app-window {
+            position: relative;
+
+            overflow: hidden;
+
+            border:
+                1px solid var(--border-strong);
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(28, 28, 28, 0.95),
+                    rgba(14, 14, 14, 0.96)
+                );
+
+            box-shadow:
+                0 60px 140px
+                rgba(0, 0, 0, 0.55);
+
+            transform:
+                rotateY(-5deg)
+                rotateX(2deg);
+
+            transition:
+                transform 0.3s ease;
+        }
+
+
+        .app-preview:hover .app-window {
+            transform:
+                rotateY(-2deg)
+                rotateX(1deg)
+                translateY(-4px);
+        }
+
+
+        .app-topbar {
+            height: 54px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 20px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .app-dots {
+            display: flex;
+
+            gap: 7px;
+        }
+
+
+        .app-dot {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 255, 255, 0.18);
+        }
+
+
+        .app-title {
             color: var(--muted);
 
             font-size: 10px;
+
+            letter-spacing: 0.08em;
+        }
+
+
+        .app-body {
+            display: grid;
+
+            grid-template-columns:
+                118px 1fr;
+
+            min-height: 480px;
+        }
+
+
+        .app-sidebar {
+            padding: 22px 14px;
+
+            border-right:
+                1px solid var(--border);
+
+            background:
+                rgba(255, 255, 255, 0.015);
+        }
+
+
+        .app-sidebar-logo {
+            margin-bottom: 35px;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            line-height: 1.4;
+        }
+
+
+        .app-nav-item {
+            margin-bottom: 8px;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+
+        .app-nav-item.active {
+            color: white;
+
+            background:
+                rgba(255, 255, 255, 0.06);
+        }
+
+
+        .app-main {
+            padding: 28px 24px;
+        }
+
+
+        .app-heading {
+            font-size: 18px;
             font-weight: 600;
+        }
+
+
+        .app-subheading {
+            margin-top: 7px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+        }
+
+
+        .app-upload {
+            margin-top: 24px;
+
+            padding: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 11px;
+
+            background:
+                rgba(255, 255, 255, 0.025);
+        }
+
+
+        .app-upload-name {
+            font-size: 9px;
+        }
+
+
+        .app-upload-btn {
+            padding: 8px 11px;
+
+            background: white;
+
+            color: #111;
+
+            border-radius: 7px;
+
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+
+        .app-progress {
+            height: 7px;
+
+            margin-top: 18px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255, 255, 255, 0.06);
+        }
+
+
+        .app-progress::before {
+            content: "";
+
+            display: block;
+
+            width: 78%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--accent),
+                    var(--accent-light)
+                );
+
+            border-radius: inherit;
+        }
+
+
+        .mock-table {
+            margin-top: 18px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+
+        .mock-row {
+            display: grid;
+
+            grid-template-columns:
+                1.7fr
+                0.7fr
+                0.7fr
+                0.6fr;
+
+            gap: 10px;
+
+            padding: 11px 12px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            font-size: 8px;
+        }
+
+
+        .mock-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .mock-row.header {
+            color: var(--muted);
+
+            background:
+                rgba(255, 255, 255, 0.035);
+        }
+
+
+        .mock-positive {
+            color: var(--success);
+        }
+
+
+        .mock-warning {
+            color: var(--accent-light);
+        }
+
+
+        /* =========================
+           DECORATIVE ORBS
+        ========================= */
+
+        .orb {
+            position: absolute;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            opacity: 0.8;
+
+            filter: blur(0.2px);
+
+            background:
+                radial-gradient(
+                    circle at 28% 24%,
+                    #fff4eb 0%,
+                    #f8a47c 8%,
+                    #ec6d38 20%,
+                    #d44a18 42%,
+                    #7d2409 72%,
+                    #301007 100%
+                );
+
+            box-shadow:
+                inset -12px -14px 22px
+                rgba(0, 0, 0, 0.38),
+                0 28px 80px
+                rgba(232, 90, 36, 0.18);
+
+            will-change: transform;
+        }
+
+
+        .orb-1 {
+            width: 75px;
+            height: 75px;
+
+            right: 3%;
+            top: 15%;
+        }
+
+
+        .orb-2 {
+            width: 34px;
+            height: 34px;
+
+            right: 44%;
+            bottom: 14%;
+        }
+
+
+        .orb-3 {
+            width: 52px;
+            height: 52px;
+
+            left: 4%;
+            bottom: 12%;
+        }
+
+
+        /* =========================
+           LOGO STRIP
+        ========================= */
+
+        .integration-strip {
+            border-top:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .integration-strip-inner {
+            min-height: 115px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 35px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .integration-label {
+            color: var(--muted);
+
+            font-size: 10px;
 
             text-transform: uppercase;
             letter-spacing: 0.12em;
         }
 
-        .card h2 {
-            margin-bottom: 14px;
+
+        .integration-list {
+            display: flex;
+
+            align-items: center;
+
+            gap: 50px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .integration-item {
+            font-size: 20px;
+
+            font-weight: 600;
+
+            letter-spacing: -0.04em;
+        }
+
+
+        .integration-item span {
+            color: var(--accent);
+        }
+
+
+        /* =========================
+           GENERAL SECTIONS
+        ========================= */
+
+        section {
+            position: relative;
+        }
+
+
+        .section {
+            padding: 120px 0;
+        }
+
+
+        .section-header {
+            margin-bottom: 62px;
+
+            display: grid;
+
+            grid-template-columns:
+                0.7fr
+                1.3fr;
+
+            gap: 80px;
+
+            align-items: start;
+        }
+
+
+        .section-kicker {
+            color: var(--accent-light);
+
+            font-size: 10px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+
+        .section-title {
+            max-width: 800px;
+
+            font-size:
+                clamp(
+                    40px,
+                    5vw,
+                    72px
+                );
+
+            line-height: 0.98;
+
+            font-weight: 500;
+
+            letter-spacing: -0.055em;
+        }
+
+
+        .section-description {
+            max-width: 650px;
+
+            margin-top: 25px;
+
+            color: var(--muted);
+
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           PROCESS
+        ========================= */
+
+        .process-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            border-top:
+                1px solid var(--border);
+
+            border-left:
+                1px solid var(--border);
+        }
+
+
+        .process-card {
+            min-height: 290px;
+
+            padding: 30px;
+
+            border-right:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+
+            transition:
+                background 0.25s ease;
+        }
+
+
+        .process-card:hover {
+            background:
+                rgba(255, 255, 255, 0.025);
+        }
+
+
+        .process-number {
+            margin-bottom: 55px;
+
+            color: var(--accent);
+
+            font-size: 11px;
+
+            letter-spacing: 0.1em;
+        }
+
+
+        .process-card h3 {
+            margin-bottom: 16px;
 
             font-size: 20px;
             font-weight: 500;
         }
 
-        .card p {
+
+        .process-card p {
             color: var(--muted);
 
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.7;
         }
 
-        .meta {
-            margin-top: 60px;
-            padding-top: 30px;
 
-            border-top: 1px solid var(--border);
+        /* =========================
+           FEATURE CARDS
+        ========================= */
 
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
 
-            gap: 30px;
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 18px;
         }
 
-        .meta-item span {
-            display: block;
 
-            margin-bottom: 8px;
+        .feature-card {
+            min-height: 320px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 34px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    150deg,
+                    rgba(255, 255, 255, 0.045),
+                    rgba(255, 255, 255, 0.015)
+                );
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease;
+        }
+
+
+        .feature-card:hover {
+            transform:
+                translateY(-4px);
+
+            border-color:
+                var(--border-strong);
+
+            background:
+                linear-gradient(
+                    150deg,
+                    rgba(255, 255, 255, 0.065),
+                    rgba(255, 255, 255, 0.02)
+                );
+        }
+
+
+        .feature-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            right: -80px;
+            bottom: -100px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(232, 90, 36, 0.12),
+                    transparent 68%
+                );
+        }
+
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+
+            margin-bottom: 58px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid var(--border-strong);
+
+            border-radius: 12px;
+
+            color: var(--accent-light);
+
+            font-size: 16px;
+        }
+
+
+        .feature-card h3 {
+            margin-bottom: 14px;
+
+            font-size: 25px;
+
+            font-weight: 500;
+
+            letter-spacing: -0.035em;
+        }
+
+
+        .feature-card p {
+            max-width: 500px;
 
             color: var(--muted);
 
-            font-size: 10px;
-            font-weight: 600;
+            font-size: 13px;
 
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
+            line-height: 1.75;
         }
 
-        .meta-item strong {
+
+        /* =========================
+           INTEGRATIONS
+        ========================= */
+
+        .external-services {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+
+        .service-card {
+            min-height: 430px;
+
+            padding: 34px;
+
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 18px;
+
+            background:
+                var(--surface);
+
+            overflow: hidden;
+        }
+
+
+        .service-top {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+
+        .service-logo {
+            font-size: 25px;
+
+            font-weight: 600;
+
+            letter-spacing: -0.05em;
+        }
+
+
+        .service-logo.orange {
+            color: var(--accent);
+        }
+
+
+        .service-badge {
+            padding: 7px 9px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 999px;
+
+            color: var(--muted);
+
+            font-size: 8px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+
+        .service-card p {
+            margin-top: 55px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+
+        .service-list {
+            margin-top: auto;
+
+            padding-top: 30px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 13px;
+        }
+
+
+        .service-list-item {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 11px;
+        }
+
+
+        .service-list-item::before {
+            content: "";
+
+            width: 5px;
+            height: 5px;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: var(--accent);
+        }
+
+
+        /* =========================
+           SECURITY
+        ========================= */
+
+        .security-panel {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            min-height: 560px;
+
+            overflow: hidden;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 22px;
+        }
+
+
+        .security-content {
+            padding: 55px;
+        }
+
+
+        .security-content h2 {
+            max-width: 520px;
+
+            font-size:
+                clamp(
+                    40px,
+                    5vw,
+                    65px
+                );
+
+            line-height: 0.98;
+
+            font-weight: 500;
+
+            letter-spacing: -0.055em;
+        }
+
+
+        .security-content p {
+            max-width: 540px;
+
+            margin-top: 25px;
+
+            color: var(--muted);
+
             font-size: 14px;
+            line-height: 1.8;
+        }
+
+
+        .security-items {
+            margin-top: 50px;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .security-item {
+            padding: 18px 0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            border-top:
+                1px solid var(--border);
+
+            font-size: 12px;
+        }
+
+
+        .security-check {
+            width: 25px;
+            height: 25px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(110, 201, 139, 0.1);
+
+            color: var(--success);
+
+            font-size: 11px;
+        }
+
+
+        .security-visual {
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(232, 90, 36, 0.12),
+                    transparent 60%
+                ),
+                #0f0f0f;
+
+            border-left:
+                1px solid var(--border);
+        }
+
+
+        .security-ring {
+            width: 300px;
+            height: 300px;
+
+            position: relative;
+
+            border:
+                1px solid
+                rgba(232, 90, 36, 0.22);
+
+            border-radius: 50%;
+        }
+
+
+        .security-ring::before,
+        .security-ring::after {
+            content: "";
+
+            position: absolute;
+
+            border-radius: 50%;
+
+            border:
+                1px solid var(--border);
+        }
+
+
+        .security-ring::before {
+            inset: 45px;
+        }
+
+
+        .security-ring::after {
+            inset: 90px;
+        }
+
+
+        .security-lock {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            width: 72px;
+            height: 72px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 18px;
+
+            background: var(--accent);
+
+            color: white;
+
+            font-size: 28px;
+
+            box-shadow:
+                0 30px 90px
+                rgba(232, 90, 36, 0.35);
+        }
+
+
+        /* =========================
+           REQUIREMENTS
+        ========================= */
+
+        .requirements {
+            display: grid;
+
+            grid-template-columns:
+                0.85fr 1.15fr;
+
+            gap: 80px;
+        }
+
+
+        .requirements-copy h2 {
+            font-size:
+                clamp(
+                    42px,
+                    5vw,
+                    70px
+                );
+
+            line-height: 0.98;
+
+            font-weight: 500;
+
+            letter-spacing: -0.055em;
+        }
+
+
+        .requirements-copy p {
+            max-width: 500px;
+
+            margin-top: 25px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+
+        .requirements-list {
+            border-top:
+                1px solid var(--border);
+        }
+
+
+        .requirement {
+            padding: 24px 0;
+
+            display: grid;
+
+            grid-template-columns:
+                52px 1fr auto;
+
+            gap: 20px;
+
+            align-items: center;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+
+        .requirement-number {
+            color: var(--muted-2);
+
+            font-size: 10px;
+        }
+
+
+        .requirement-name {
+            font-size: 15px;
+
             font-weight: 500;
         }
 
-        .footer {
-            margin-top: 80px;
+
+        .requirement-value {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            text-align: right;
+        }
+
+
+        /* =========================
+           VERSION / STATUS
+        ========================= */
+
+        .status-panel {
+            padding: 50px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 40px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    120deg,
+                    rgba(232, 90, 36, 0.065),
+                    rgba(255, 255, 255, 0.02)
+                );
+        }
+
+
+        .status-left {
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+
+        .status-dot {
+            width: 13px;
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: var(--success);
+
+            box-shadow:
+                0 0 20px
+                rgba(110, 201, 139, 0.45);
+        }
+
+
+        .status-title {
+            font-size: 18px;
+
+            font-weight: 500;
+        }
+
+
+        .status-description {
+            margin-top: 6px;
 
             color: var(--muted);
 
             font-size: 11px;
         }
 
-        @media (max-width: 720px) {
-            .page {
-                width: min(100% - 28px, 1100px);
-                padding-top: 24px;
+
+        .status-version {
+            font-size:
+                clamp(
+                    40px,
+                    5vw,
+                    68px
+                );
+
+            font-weight: 500;
+
+            letter-spacing: -0.06em;
+        }
+
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            padding:
+                160px 0 130px;
+        }
+
+
+        .cta-inner {
+            max-width: 920px;
+
+            margin: 0 auto;
+
+            text-align: center;
+        }
+
+
+        .cta-label {
+            margin-bottom: 24px;
+
+            color: var(--accent-light);
+
+            font-size: 10px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+
+        .cta h2 {
+            font-size:
+                clamp(
+                    54px,
+                    8vw,
+                    112px
+                );
+
+            line-height: 0.88;
+
+            font-weight: 500;
+
+            letter-spacing: -0.07em;
+        }
+
+
+        .cta p {
+            max-width: 620px;
+
+            margin:
+                34px auto 0;
+
+            color: var(--muted);
+
+            font-size: 15px;
+
+            line-height: 1.8;
+        }
+
+
+        .cta-actions {
+            margin-top: 38px;
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            padding:
+                35px 0;
+
+            border-top:
+                1px solid var(--border);
+        }
+
+
+        .footer-inner {
+            display: flex;
+
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 40px;
+        }
+
+
+        .footer-brand {
+            font-size: 16px;
+
+            font-weight: 600;
+        }
+
+
+        .footer-info {
+            margin-top: 9px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+
+        .footer-links {
+            display: flex;
+
+            gap: 28px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .footer-links a {
+            color: var(--muted);
+
+            font-size: 10px;
+
+            transition: color 0.2s ease;
+        }
+
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+
+        /* =========================
+           REVEAL
+        ========================= */
+
+        .reveal {
+            opacity: 0;
+
+            transform:
+                translateY(30px);
+
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s ease;
+        }
+
+
+        .reveal.visible {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (
+            max-width: 1050px
+        ) {
+
+            .hero-grid {
+                grid-template-columns:
+                    1fr;
+
+                gap: 70px;
             }
+
+
+            .app-preview {
+                max-width: 700px;
+            }
+
+
+            .process-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .external-services {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .service-card {
+                min-height: 330px;
+            }
+
+
+            .security-panel {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .security-visual {
+                min-height: 430px;
+
+                border-left: none;
+
+                border-top:
+                    1px solid var(--border);
+            }
+
+
+            .requirements {
+                grid-template-columns:
+                    1fr;
+
+                gap: 50px;
+            }
+
+        }
+
+
+        @media (
+            max-width: 800px
+        ) {
+
+            .container {
+                width:
+                    calc(100% - 40px);
+            }
+
+
+            .navbar {
+                padding: 18px 0;
+            }
+
+
+            .navbar-menu {
+                display: none;
+            }
+
+
+            .navbar-cta .button {
+                display: none;
+            }
+
 
             .hero {
-                padding: 60px 0 50px;
+                min-height: auto;
+
+                padding:
+                    130px 0 80px;
             }
 
-            .grid,
-            .meta {
-                grid-template-columns: 1fr;
+
+            .hero h1 {
+                font-size:
+                    clamp(
+                        58px,
+                        16vw,
+                        92px
+                    );
             }
 
-            .header {
-                gap: 20px;
+
+            .hero-lead {
+                font-size: 15px;
+            }
+
+
+            .app-window {
+                transform: none;
+            }
+
+
+            .app-body {
+                grid-template-columns:
+                    85px 1fr;
+            }
+
+
+            .section {
+                padding: 90px 0;
+            }
+
+
+            .section-header {
+                grid-template-columns:
+                    1fr;
+
+                gap: 28px;
+
+                margin-bottom: 45px;
+            }
+
+
+            .process-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .features-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .feature-card {
+                min-height: 280px;
+            }
+
+
+            .security-content {
+                padding: 35px;
+            }
+
+
+            .status-panel {
                 align-items: flex-start;
+
+                flex-direction: column;
             }
+
+
+            .footer-inner {
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
         }
+
+
+        @media (
+            max-width: 520px
+        ) {
+
+            .container {
+                width:
+                    calc(100% - 28px);
+            }
+
+
+            .brand-text {
+                font-size: 12px;
+            }
+
+
+            .hero h1 {
+                font-size:
+                    clamp(
+                        50px,
+                        17vw,
+                        76px
+                    );
+            }
+
+
+            .hero-actions {
+                align-items: stretch;
+
+                flex-direction: column;
+            }
+
+
+            .button {
+                width: 100%;
+            }
+
+
+            .app-body {
+                display: block;
+            }
+
+
+            .app-sidebar {
+                display: none;
+            }
+
+
+            .app-main {
+                padding: 20px 16px;
+            }
+
+
+            .mock-row {
+                grid-template-columns:
+                    1.5fr 0.8fr 0.8fr;
+
+                font-size: 7px;
+            }
+
+
+            .mock-row > *:nth-child(4) {
+                display: none;
+            }
+
+
+            .integration-strip-inner {
+                padding: 30px 0;
+            }
+
+
+            .integration-list {
+                gap: 24px;
+            }
+
+
+            .integration-item {
+                font-size: 16px;
+            }
+
+
+            .process-card {
+                min-height: 250px;
+            }
+
+
+            .feature-card {
+                padding: 26px;
+            }
+
+
+            .service-card {
+                padding: 26px;
+            }
+
+
+            .security-content {
+                padding: 28px 22px;
+            }
+
+
+            .security-ring {
+                width: 230px;
+                height: 230px;
+            }
+
+
+            .requirement {
+                grid-template-columns:
+                    35px 1fr;
+
+                align-items: start;
+            }
+
+
+            .requirement-value {
+                grid-column:
+                    2;
+
+                text-align: left;
+            }
+
+
+            .status-panel {
+                padding: 32px 25px;
+            }
+
+
+            .cta {
+                padding:
+                    110px 0 90px;
+            }
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <div class="page">
 
-        <header class="header">
+    <nav
+        class="navbar"
+        id="navbar"
+    >
 
-            <div class="brand">
-                TripleDots Studio
-            </div>
+        <div
+            class="container navbar-inner"
+        >
 
             <a
-                class="back"
                 href="/"
+                class="navbar-brand"
             >
-                tripledots.pl
+
+                <div class="brand-mark">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <div class="brand-text">
+                    TripleDots Studio
+                </div>
+
             </a>
 
-        </header>
+
+            <div class="navbar-menu">
+
+                <a href="#product">
+                    Produkt
+                </a>
+
+                <a href="#process">
+                    Jak działa
+                </a>
+
+                <a href="#integrations">
+                    Integracje
+                </a>
+
+                <a href="#security">
+                    Bezpieczeństwo
+                </a>
+
+                <a href="#requirements">
+                    Wymagania
+                </a>
+
+            </div>
 
 
-        <main>
+            <div class="navbar-cta">
 
-            <section class="hero">
-
-                <div class="eyebrow">
-                    Aplikacja desktopowa
+                <div class="version-pill">
+                    v0.3.0
                 </div>
 
-                <h1>
-                    MarketProfit Analyzer
-                </h1>
+                <a
+                    class="button button-secondary"
+                    href="mailto:biuro@tripledots.pl"
+                >
+                    Kontakt
+                </a>
 
-                <p class="lead">
-                    MarketProfit Analyzer to narzędzie do analizy ofert
-                    dostawców, porównywania cen produktów na marketplace
-                    oraz kalkulacji kosztów i rentowności sprzedaży.
-                </p>
+            </div>
 
-            </section>
+        </div>
+
+    </nav>
 
 
-            <section class="grid">
+    <main>
 
-                <article class="card">
 
-                    <div class="card-label">
-                        Analiza
+        <!-- HERO -->
+
+        <section
+            class="hero"
+            id="product"
+        >
+
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+
+
+            <div
+                class="container hero-grid"
+            >
+
+                <div class="hero-content">
+
+                    <div class="eyebrow">
+
+                        <span class="eyebrow-dot"></span>
+
+                        Analiza rentowności marketplace
+
                     </div>
 
-                    <h2>
-                        Porównywanie ofert
-                    </h2>
 
-                    <p>
-                        Aplikacja umożliwia import ofert dostawców
-                        i porównanie ich z aktualnymi danymi rynkowymi.
+                    <h1>
+                        MarketProfit
+                        <span>Analyzer</span>
+                    </h1>
+
+
+                    <p class="hero-lead">
+                        Desktopowe narzędzie do analizy ofert dostawców,
+                        porównywania cen produktów na marketplace
+                        i oceny rzeczywistej rentowności sprzedaży.
                     </p>
 
-                </article>
 
+                    <div class="hero-actions">
 
-                <article class="card">
+                        <a
+                            href="#process"
+                            class="button button-primary"
+                        >
+                            Zobacz jak działa
+                        </a>
 
-                    <div class="card-label">
-                        Marketplace
+                        <a
+                            href="#integrations"
+                            class="button button-secondary"
+                        >
+                            Integracje
+                        </a>
+
                     </div>
 
-                    <h2>
-                        Integracja z Allegro
-                    </h2>
 
-                    <p>
-                        Integracja z Allegro REST API służy do odczytu
-                        danych potrzebnych do analizy ofert oraz
-                        prognozowanych opłat związanych ze sprzedażą.
-                    </p>
-
-                </article>
-
-
-                <article class="card">
-
-                    <div class="card-label">
-                        Rentowność
+                    <div class="hero-note">
+                        Aplikacja rozwijana przez TripleDots Studio
                     </div>
-
-                    <h2>
-                        Kalkulacja kosztów
-                    </h2>
-
-                    <p>
-                        System zestawia cenę zakupu, cenę rynkową,
-                        opłaty marketplace oraz inne koszty w celu
-                        wyliczenia szacowanej rentowności produktu.
-                    </p>
-
-                </article>
-
-
-                <article class="card">
-
-                    <div class="card-label">
-                        Dane
-                    </div>
-
-                    <h2>
-                        Eksport wyników
-                    </h2>
-
-                    <p>
-                        Wyniki analizy mogą być eksportowane
-                        do arkusza Excel w celu dalszej pracy,
-                        raportowania i porównywania produktów.
-                    </p>
-
-                </article>
-
-            </section>
-
-
-            <section class="meta">
-
-                <div class="meta-item">
-
-                    <span>
-                        Producent
-                    </span>
-
-                    <strong>
-                        TripleDots Studio
-                    </strong>
 
                 </div>
 
 
-                <div class="meta-item">
+                <div class="app-preview">
 
-                    <span>
-                        Wersja
-                    </span>
+                    <div class="app-window">
 
-                    <strong>
+                        <div class="app-topbar">
+
+                            <div class="app-dots">
+                                <div class="app-dot"></div>
+                                <div class="app-dot"></div>
+                                <div class="app-dot"></div>
+                            </div>
+
+                            <div class="app-title">
+                                MARKETPROFIT ANALYZER
+                            </div>
+
+                        </div>
+
+
+                        <div class="app-body">
+
+                            <div class="app-sidebar">
+
+                                <div class="app-sidebar-logo">
+                                    MARKETPROFIT
+                                    <br>
+                                    ANALYZER
+                                </div>
+
+                                <div
+                                    class="app-nav-item active"
+                                >
+                                    Analiza
+                                </div>
+
+                                <div class="app-nav-item">
+                                    Historia
+                                </div>
+
+                                <div class="app-nav-item">
+                                    Ustawienia
+                                </div>
+
+                            </div>
+
+
+                            <div class="app-main">
+
+                                <div class="app-heading">
+                                    Analiza ofert
+                                </div>
+
+                                <div class="app-subheading">
+                                    Porównanie oferty dostawcy z rynkiem
+                                </div>
+
+
+                                <div class="app-upload">
+
+                                    <div class="app-upload-name">
+                                        dostawca_09_2026.xlsx
+                                    </div>
+
+                                    <div class="app-upload-btn">
+                                        Analizuj
+                                    </div>
+
+                                </div>
+
+
+                                <div class="app-progress"></div>
+
+
+                                <div class="mock-table">
+
+                                    <div class="mock-row header">
+                                        <div>Produkt</div>
+                                        <div>Zakup</div>
+                                        <div>Rynek</div>
+                                        <div>Status</div>
+                                    </div>
+
+
+                                    <div class="mock-row">
+                                        <div>iPhone 16 128GB</div>
+                                        <div>2700 zł</div>
+                                        <div>3269 zł</div>
+                                        <div class="mock-positive">
+                                            OK
+                                        </div>
+                                    </div>
+
+
+                                    <div class="mock-row">
+                                        <div>Galaxy S25 256GB</div>
+                                        <div>2500 zł</div>
+                                        <div>2851 zł</div>
+                                        <div class="mock-positive">
+                                            OK
+                                        </div>
+                                    </div>
+
+
+                                    <div class="mock-row">
+                                        <div>AirPods Pro 2</div>
+                                        <div>750 zł</div>
+                                        <div>239 zł</div>
+                                        <div class="mock-warning">
+                                            CHECK
+                                        </div>
+                                    </div>
+
+
+                                    <div class="mock-row">
+                                        <div>Galaxy Buds3 Pro</div>
+                                        <div>520 zł</div>
+                                        <div>589 zł</div>
+                                        <div class="mock-positive">
+                                            OK
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INTEGRATION STRIP -->
+
+        <div class="integration-strip">
+
+            <div
+                class="container integration-strip-inner"
+            >
+
+                <div class="integration-label">
+                    Współpracuje z
+                </div>
+
+
+                <div class="integration-list">
+
+                    <div class="integration-item">
+                        <span>allegro</span>
+                    </div>
+
+                    <div class="integration-item">
+                        Oxylabs
+                    </div>
+
+                    <div class="integration-item">
+                        OpenAI
+                    </div>
+
+                    <div class="integration-item">
+                        Excel
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PROCESS -->
+
+        <section
+            class="section"
+            id="process"
+        >
+
+            <div class="container">
+
+                <div
+                    class="section-header reveal"
+                >
+
+                    <div class="section-kicker">
+                        Jak działa
+                    </div>
+
+
+                    <div>
+
+                        <h2 class="section-title">
+                            Od pliku dostawcy
+                            do decyzji zakupowej.
+                        </h2>
+
+                        <p class="section-description">
+                            MarketProfit Analyzer automatyzuje proces,
+                            który przy dużych ofertach handlowych
+                            wymagałby ręcznego sprawdzania setek
+                            produktów i cen.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="process-grid">
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            01
+                        </div>
+
+                        <h3>
+                            Import danych
+                        </h3>
+
+                        <p>
+                            Oferta dostawcy może zostać
+                            zaimportowana z pliku XLSX lub CSV.
+                        </p>
+
+                    </article>
+
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            02
+                        </div>
+
+                        <h3>
+                            Identyfikacja produktu
+                        </h3>
+
+                        <p>
+                            System analizuje nazwę produktu,
+                            model, wariant, pamięć, kolor
+                            i inne cechy potrzebne do dopasowania.
+                        </p>
+
+                    </article>
+
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            03
+                        </div>
+
+                        <h3>
+                            Analiza rynku
+                        </h3>
+
+                        <p>
+                            Dane produktu są porównywane
+                            z aktualnymi ofertami dostępnymi
+                            na platformie marketplace.
+                        </p>
+
+                    </article>
+
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            04
+                        </div>
+
+                        <h3>
+                            Weryfikacja ceny
+                        </h3>
+
+                        <p>
+                            Mechanizmy walidacyjne wykrywają
+                            podejrzane lub nietypowe ceny,
+                            ograniczając ryzyko błędnej analizy.
+                        </p>
+
+                    </article>
+
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            05
+                        </div>
+
+                        <h3>
+                            Kalkulacja kosztów
+                        </h3>
+
+                        <p>
+                            Cena zakupu zostaje zestawiona
+                            z ceną rynkową, prognozowanymi
+                            opłatami oraz kosztami dodatkowymi.
+                        </p>
+
+                    </article>
+
+
+                    <article class="process-card reveal">
+
+                        <div class="process-number">
+                            06
+                        </div>
+
+                        <h3>
+                            Raport
+                        </h3>
+
+                        <p>
+                            Wyniki mogą zostać posortowane
+                            według rentowności i wyeksportowane
+                            do arkusza Excel.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FEATURES -->
+
+        <section class="section">
+
+            <div class="container">
+
+                <div
+                    class="section-header reveal"
+                >
+
+                    <div class="section-kicker">
+                        Możliwości
+                    </div>
+
+
+                    <div>
+
+                        <h2 class="section-title">
+                            Jedna aplikacja.
+                            Cały proces analizy.
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="features-grid">
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            01
+                        </div>
+
+                        <h3>
+                            Analiza ofert dostawców
+                        </h3>
+
+                        <p>
+                            Automatyczne przetwarzanie wielu
+                            pozycji z ofert zakupowych bez
+                            konieczności ręcznego wyszukiwania
+                            każdego produktu.
+                        </p>
+
+                    </article>
+
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            02
+                        </div>
+
+                        <h3>
+                            Porównanie cen
+                        </h3>
+
+                        <p>
+                            Zestawienie ceny jednostkowej
+                            dostawcy z aktualną ceną
+                            identycznego produktu dostępną
+                            na marketplace.
+                        </p>
+
+                    </article>
+
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            03
+                        </div>
+
+                        <h3>
+                            Walidacja danych
+                        </h3>
+
+                        <p>
+                            System sygnalizuje nietypowe
+                            rozbieżności cenowe i dane,
+                            które powinny zostać dodatkowo
+                            zweryfikowane.
+                        </p>
+
+                    </article>
+
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            04
+                        </div>
+
+                        <h3>
+                            Rentowność sprzedaży
+                        </h3>
+
+                        <p>
+                            Kalkulacja potencjalnego wyniku
+                            sprzedaży z uwzględnieniem ceny
+                            zakupu, opłat marketplace
+                            i kosztów dodatkowych.
+                        </p>
+
+                    </article>
+
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            05
+                        </div>
+
+                        <h3>
+                            Cache danych
+                        </h3>
+
+                        <p>
+                            Dane rynkowe mogą być lokalnie
+                            buforowane, dzięki czemu ponowne
+                            analizy są szybsze i ograniczają
+                            liczbę zapytań do usług zewnętrznych.
+                        </p>
+
+                    </article>
+
+
+                    <article class="feature-card reveal">
+
+                        <div class="feature-icon">
+                            06
+                        </div>
+
+                        <h3>
+                            Raportowanie Excel
+                        </h3>
+
+                        <p>
+                            Pełny wynik analizy można
+                            eksportować do XLSX wraz
+                            z informacjami o cenach,
+                            dopasowaniu i statusie produktu.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INTEGRATIONS -->
+
+        <section
+            class="section"
+            id="integrations"
+        >
+
+            <div class="container">
+
+                <div
+                    class="section-header reveal"
+                >
+
+                    <div class="section-kicker">
+                        Integracje
+                    </div>
+
+
+                    <div>
+
+                        <h2 class="section-title">
+                            Dane z wielu źródeł.
+                            Jeden wynik.
+                        </h2>
+
+                        <p class="section-description">
+                            MarketProfit Analyzer korzysta
+                            z zewnętrznych usług odpowiedzialnych
+                            za dane rynkowe, funkcje marketplace
+                            oraz opcjonalne wspomaganie analizy.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="external-services">
+
+
+                    <article class="service-card reveal">
+
+                        <div class="service-top">
+
+                            <div class="service-logo orange">
+                                allegro
+                            </div>
+
+                            <div class="service-badge">
+                                REST API
+                            </div>
+
+                        </div>
+
+
+                        <p>
+                            Oficjalne Allegro REST API
+                            wykorzystywane jest do funkcji
+                            wymagających autoryzacji konta
+                            użytkownika oraz danych dotyczących
+                            prognozowanych kosztów sprzedaży.
+                        </p>
+
+
+                        <div class="service-list">
+
+                            <div class="service-list-item">
+                                OAuth 2.0
+                            </div>
+
+                            <div class="service-list-item">
+                                Prognozowane opłaty
+                            </div>
+
+                            <div class="service-list-item">
+                                Minimalny zakres uprawnień
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="service-card reveal">
+
+                        <div class="service-top">
+
+                            <div class="service-logo">
+                                Oxylabs
+                            </div>
+
+                            <div class="service-badge">
+                                Web Scraper API
+                            </div>
+
+                        </div>
+
+
+                        <p>
+                            Oxylabs Web Scraper API odpowiada
+                            za pozyskiwanie aktualnych danych
+                            rynkowych dotyczących produktów
+                            i ofert wykorzystywanych podczas
+                            procesu porównania cen.
+                        </p>
+
+
+                        <div class="service-list">
+
+                            <div class="service-list-item">
+                                Dane ofert
+                            </div>
+
+                            <div class="service-list-item">
+                                Ceny produktów
+                            </div>
+
+                            <div class="service-list-item">
+                                Dane rynkowe
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="service-card reveal">
+
+                        <div class="service-top">
+
+                            <div class="service-logo">
+                                OpenAI
+                            </div>
+
+                            <div class="service-badge">
+                                Opcjonalne
+                            </div>
+
+                        </div>
+
+
+                        <p>
+                            Integracja OpenAI może wspomagać
+                            interpretację i standaryzację
+                            niejednoznacznych nazw produktów.
+                            Podstawowe działanie systemu
+                            nie wymaga tej integracji.
+                        </p>
+
+
+                        <div class="service-list">
+
+                            <div class="service-list-item">
+                                Normalizacja nazw
+                            </div>
+
+                            <div class="service-list-item">
+                                Wspomaganie identyfikacji
+                            </div>
+
+                            <div class="service-list-item">
+                                Integracja opcjonalna
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+
+        <section
+            class="section"
+            id="security"
+        >
+
+            <div class="container">
+
+                <div class="security-panel reveal">
+
+                    <div class="security-content">
+
+                        <div class="section-kicker">
+                            Bezpieczeństwo
+                        </div>
+
+
+                        <h2>
+                            Dostęp tylko tam,
+                            gdzie jest potrzebny.
+                        </h2>
+
+
+                        <p>
+                            Integracja z Allegro wykorzystuje
+                            standard OAuth 2.0. Aplikacja nie
+                            wymaga podawania hasła użytkownika
+                            do konta Allegro.
+                        </p>
+
+
+                        <div class="security-items">
+
+                            <div class="security-item">
+
+                                <div class="security-check">
+                                    ✓
+                                </div>
+
+                                Autoryzacja konta przez Allegro OAuth 2.0
+
+                            </div>
+
+
+                            <div class="security-item">
+
+                                <div class="security-check">
+                                    ✓
+                                </div>
+
+                                Brak dostępu do hasła użytkownika Allegro
+
+                            </div>
+
+
+                            <div class="security-item">
+
+                                <div class="security-check">
+                                    ✓
+                                </div>
+
+                                Minimalny wymagany zakres uprawnień API
+
+                            </div>
+
+
+                            <div class="security-item">
+
+                                <div class="security-check">
+                                    ✓
+                                </div>
+
+                                Dane dostępowe usług przechowywane lokalnie
+
+                            </div>
+
+
+                            <div class="security-item">
+
+                                <div class="security-check">
+                                    ✓
+                                </div>
+
+                                Aplikacja nie publikuje ani nie usuwa ofert
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="security-visual">
+
+                        <div class="security-ring">
+
+                            <div class="security-lock">
+                                ◈
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REQUIREMENTS -->
+
+        <section
+            class="section"
+            id="requirements"
+        >
+
+            <div class="container requirements">
+
+                <div
+                    class="requirements-copy reveal"
+                >
+
+                    <div class="section-kicker">
+                        Wymagania
+                    </div>
+
+
+                    <h2>
+                        Co jest potrzebne
+                        do działania?
+                    </h2>
+
+
+                    <p>
+                        Aplikacja działa lokalnie na komputerze,
+                        ale część funkcji wymaga połączenia
+                        z usługami zewnętrznymi.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="requirements-list reveal"
+                >
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            01
+                        </div>
+
+                        <div class="requirement-name">
+                            System operacyjny
+                        </div>
+
+                        <div class="requirement-value">
+                            Windows 10 / Windows 11
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            02
+                        </div>
+
+                        <div class="requirement-name">
+                            Połączenie internetowe
+                        </div>
+
+                        <div class="requirement-value">
+                            Wymagane
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            03
+                        </div>
+
+                        <div class="requirement-name">
+                            Oxylabs
+                        </div>
+
+                        <div class="requirement-value">
+                            Konto z dostępem do Web Scraper API
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            04
+                        </div>
+
+                        <div class="requirement-name">
+                            Allegro
+                        </div>
+
+                        <div class="requirement-value">
+                            Konto wymagane dla funkcji REST API
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            05
+                        </div>
+
+                        <div class="requirement-name">
+                            OpenAI API
+                        </div>
+
+                        <div class="requirement-value">
+                            Opcjonalne
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-number">
+                            06
+                        </div>
+
+                        <div class="requirement-name">
+                            Format danych
+                        </div>
+
+                        <div class="requirement-value">
+                            XLSX / CSV
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- VERSION -->
+
+        <section class="section">
+
+            <div class="container">
+
+                <div class="status-panel reveal">
+
+                    <div class="status-left">
+
+                        <div class="status-dot"></div>
+
+                        <div>
+
+                            <div class="status-title">
+                                Aktywnie rozwijany
+                            </div>
+
+                            <div class="status-description">
+                                MarketProfit Analyzer
+                                jest obecnie rozwijany przez TripleDots Studio.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-version">
                         0.3.0
-                    </strong>
+                    </div>
 
                 </div>
 
+            </div>
 
-                <div class="meta-item">
+        </section>
 
-                    <span>
-                        Kontakt
-                    </span>
 
-                    <strong>
-                        biuro@tripledots.pl
-                    </strong>
+        <!-- CTA -->
+
+        <section class="cta">
+
+            <div class="container">
+
+                <div class="cta-inner reveal">
+
+                    <div class="cta-label">
+                        TripleDots Studio
+                    </div>
+
+
+                    <h2>
+                        Dane.
+                        Decyzja.
+                        Marża.
+                    </h2>
+
+
+                    <p>
+                        MarketProfit Analyzer powstaje jako
+                        narzędzie do szybszej i bardziej świadomej
+                        oceny ofert zakupowych w sprzedaży
+                        marketplace.
+                    </p>
+
+
+                    <div class="cta-actions">
+
+                        <a
+                            href="mailto:biuro@tripledots.pl"
+                            class="button button-primary"
+                        >
+                            biuro@tripledots.pl
+                        </a>
+
+                        <a
+                            href="/"
+                            class="button button-secondary"
+                        >
+                            TripleDots Studio
+                        </a>
+
+                    </div>
 
                 </div>
 
-            </section>
+            </div>
 
-        </main>
+        </section>
 
 
-        <footer class="footer">
-            © TripleDots Studio
-        </footer>
+    </main>
 
-    </div>
+
+    <footer>
+
+        <div
+            class="container footer-inner"
+        >
+
+            <div>
+
+                <div class="footer-brand">
+                    TripleDots Studio
+                </div>
+
+                <div class="footer-info">
+                    MarketProfit Analyzer v0.3.0
+                </div>
+
+            </div>
+
+
+            <div class="footer-links">
+
+                <a href="#product">
+                    Produkt
+                </a>
+
+                <a href="#integrations">
+                    Integracje
+                </a>
+
+                <a href="#security">
+                    Bezpieczeństwo
+                </a>
+
+                <a href="mailto:biuro@tripledots.pl">
+                    Kontakt
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <script>
+
+        const navbar =
+            document.querySelector(
+                "#navbar"
+            );
+
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                if (
+                    window.scrollY > 30
+                ) {
+
+                    navbar.classList.add(
+                        "scrolled"
+                    );
+
+                } else {
+
+                    navbar.classList.remove(
+                        "scrolled"
+                    );
+
+                }
+
+            }
+        );
+
+
+        const revealElements =
+            document.querySelectorAll(
+                ".reveal"
+            );
+
+
+        const observer =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(
+                        entry => {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target.classList.add(
+                                    "visible"
+                                );
+
+                                observer.unobserve(
+                                    entry.target
+                                );
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.12
+                }
+            );
+
+
+        revealElements.forEach(
+            element => {
+
+                observer.observe(
+                    element
+                );
+
+            }
+        );
+
+
+        const orbs =
+            document.querySelectorAll(
+                ".orb"
+            );
+
+
+        window.addEventListener(
+            "mousemove",
+            event => {
+
+                const x =
+                    (
+                        event.clientX
+                        / window.innerWidth
+                        - 0.5
+                    );
+
+                const y =
+                    (
+                        event.clientY
+                        / window.innerHeight
+                        - 0.5
+                    );
+
+
+                orbs.forEach(
+                    (
+                        orb,
+                        index
+                    ) => {
+
+                        const multiplier =
+                            (
+                                index + 1
+                            )
+                            * 10;
+
+
+                        orb.style.transform =
+                            `
+                            translate(
+                                ${x * multiplier}px,
+                                ${y * multiplier}px
+                            )
+                            `;
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
 
 </body>
+
 </html>
